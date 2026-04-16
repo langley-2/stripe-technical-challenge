@@ -1,0 +1,110 @@
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  Elements,
+  PaymentElement,
+  useStripe,
+  useElements,
+} from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { useState, useEffect } from "react";
+
+const stripePromise = loadStripe(
+  "pk_test_51QvyHcGWTtj4d7bGpvxRvKSceevlucwN5xdZU55wgliFUJkrhm5CHG6vYwsoDDkg2zrcLNP7EX5pz7QHMyTNLF1t0071QIxheZ",
+);
+
+export default function Checkout() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const bookId = location.state?.bookId;
+
+  const [book, setBook] = useState(null);
+  const [clientSecret, setClientSecret] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  function CheckoutForm() {
+    const stripe = useStripe();
+    const elements = useElements();
+
+    async function handleSubmit(e) {
+      e.preventDefault();
+      await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/payment-acknowledged`,
+        },
+      });
+    }
+    return (
+      <form onSubmit={handleSubmit}>
+        <PaymentElement />
+        <div className="pt-4">
+          <button
+            className="bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium px-8 py-3 rounded-full transition-colors duration-200"
+            type="submit"
+          >
+            Pay now
+          </button>
+        </div>
+      </form>
+    );
+  }
+
+  useEffect(() => {
+    fetch(`/api/items/${bookId}`)
+      .then((r) => r.json())
+      .then((book) => {
+        setBook(book);
+        return fetch(`/api/create-payment-intent`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ item_id: bookId }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            setClientSecret(data.client_secret);
+            setLoading(false);
+          });
+      });
+  }, []);
+
+  if (!bookId) {
+    navigate("/");
+    return null;
+  }
+  if (loading) {
+    return <h2> loading </h2>;
+  }
+
+  return (
+    <div className="min-h-screen bg-white text-gray-900 flex items-center justify-center px-6">
+      <div className="w-full max-w-md">
+        <button
+          onClick={() => navigate("/")}
+          className="text-sm text-gray-400 hover:text-gray-600 mb-10 transition-colors block"
+        >
+          ← Back
+        </button>
+
+        <div className="mb-8">
+          <p className="text-xs font-medium uppercase tracking-widest text-gray-400 mb-2">
+            Checkout
+          </p>
+          <span className="text-5xl mb-4 block">📖</span>
+          <h2 className="text-3xl font-semibold tracking-tight text-gray-900 mb-1">
+            {book.title}
+          </h2>
+          <p className="text-lg text-gray-400">
+            ${(book.amount / 100).toFixed(2)}
+          </p>
+        </div>
+        {clientSecret ? (
+          <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <CheckoutForm />
+          </Elements>
+        ) : (
+          <h1>loading</h1>
+        )}
+      </div>
+    </div>
+  );
+}
