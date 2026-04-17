@@ -8,19 +8,10 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import { useState, useEffect } from "react";
 
+const stripe_key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 const stripePromise = loadStripe(
-  "pk_test_51QvyHcGWTtj4d7bGpvxRvKSceevlucwN5xdZU55wgliFUJkrhm5CHG6vYwsoDDkg2zrcLNP7EX5pz7QHMyTNLF1t0071QIxheZ",
+  stripe_key
 );
-
-export default function Checkout() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const bookId = location.state?.bookId;
-
-  const [book, setBook] = useState(null);
-  const [clientSecret, setClientSecret] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   function CheckoutForm() {
     const stripe = useStripe();
     const elements = useElements();
@@ -48,6 +39,16 @@ export default function Checkout() {
       </form>
     );
   }
+export default function Checkout() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const bookId = location.state?.bookId;
+
+  const [book, setBook] = useState(null);
+  const [clientSecret, setClientSecret] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+
 
   useEffect(() => {
     fetch(`/api/items/${bookId}`)
