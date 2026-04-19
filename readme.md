@@ -96,6 +96,7 @@ Once i had made the backend i started on some simple front end pages. I used Cla
 
 ## Extensions and Enhancements
 
+- Create tests and test cases for both front end and back end
 - Currently, the API endpoints in the backend are unauthenticated, and not tied to a session. Ideally, we could map a users session_id to their payment_intent_id in a database and check that in the backend such that payment_intent statuses remain session bound.
 - Currently, the front end and back end poll for a successful payment. The poll occurs 3 times to prevent infinite polling. A better configuration would be to use Stripe webhooks to send events for successful payments 
 - The items are hardcoded in the backend. A better approach would be to store products in stripe, or in a database.
@@ -103,3 +104,7 @@ Once i had made the backend i started on some simple front end pages. I used Cla
 - PaymentIntent is created on the page load for the checkout. This is standard it might create some dangling intents in Stripe if a user doesnt check out. We could add code to clean these up or perform analytics if a user doesnt purchase or the purchase fails. There is also no retry flow currently for failed payments. 
 - The Python backend does have models for Item, which is unused. I added SOME models for basic extensibility.
 - The structure of the codebase could be improved - for example, breaking API endpoints into separate files, adding authentication handling structures, database interfaces and classes - i traded simplicy for extensible structure with some minor exceptions like adding some Models. 
+- Checkout items at the moment are passed by state. This could be improved by moving them to query parameters - that way any person checking out could send that link to another person to checkout without causing a failure. 
+- Could also update the backend to return stripe errors, and update the front end to have them rendered. 
+- We could also add some simple extensions - like for example, a quantity selector, or an in memory store for previously purchased items. 
+- Failed API calls will also leave the UI dangling. This could be fixed. 

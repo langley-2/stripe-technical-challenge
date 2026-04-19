@@ -38,7 +38,7 @@ export default function Home() {
                 <div className="flex items-center justify-between mt-auto">
                   <span className="text-lg font-medium text-gray-800">${(book.amount / 100).toFixed(2)}</span>
                   <button
-                    onClick={() => navigate('/checkout', { state: { bookId: book.id } })}
+                    onClick={() => navigate(`/checkout?item_id=${book.id}`)}
                     className="bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium px-5 py-2 rounded-full transition-colors duration-200"
                   >
                     Buy

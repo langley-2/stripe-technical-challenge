@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Elements,
   PaymentElement,
@@ -7,6 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useState, useEffect } from "react";
+
 
 const stripe_key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
 const stripePromise = loadStripe(
@@ -42,7 +43,8 @@ const stripePromise = loadStripe(
 export default function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const bookId = location.state?.bookId;
+  const [searchParams, setSearchParams] = useSearchParams(); 
+  const bookId = searchParams.get("item_id")
 
   const [book, setBook] = useState(null);
   const [clientSecret, setClientSecret] = useState(null);
