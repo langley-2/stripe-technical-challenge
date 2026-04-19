@@ -79,6 +79,15 @@ source .venv/bin/activate
 
 This sample app is configured to use a proxy to avoid CORS issues; this can be configured in `vite.config.js`.
 
+
+
+**testing**
+some small test cases have been added to validate the backend API endpoints. 
+To run the tests:
+1. from the project root, `cd backend`
+2. run `python3 -m pytest` in the terminal using the project venv in `.venv`
+3. The terminal should show `tests/test_main.py ... 6 passed in 0.14s` or similar as output. 
+
 ## Challenges, Approach and Reflections
 
 My approach was iterative. 
