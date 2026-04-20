@@ -12,7 +12,8 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "localhost:8000/api/items",
+          "raw": "http://localhost:8000/api/items",
+          "protocol": "http",
           "host": [
             "localhost"
           ],
@@ -31,7 +32,8 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "localhost:8000/api/items/1",
+          "raw": "http://localhost:8000/api/items/1",
+          "protocol": "http",
           "host": [
             "localhost"
           ],
@@ -49,7 +51,13 @@
       "name": "Create Payment Intent",
       "request": {
         "method": "POST",
-        "header": [],
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
         "body": {
           "mode": "raw",
           "raw": "{\n    \"item_id\" : \"1\"\n}",
@@ -60,7 +68,8 @@
           }
         },
         "url": {
-          "raw": "localhost:8000/api/create-payment-intent",
+          "raw": "http://localhost:8000/api/create-payment-intent",
+          "protocol": "http",
           "host": [
             "localhost"
           ],
@@ -79,7 +88,8 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "localhost:8000/api/check-payment-intent-status/PAYMENT_INTENT_ID",
+          "raw": "http://localhost:8000/api/check-payment-intent-status/PAYMENT_INTENT_ID",
+          "protocol": "http",
           "host": [
             "localhost"
           ],

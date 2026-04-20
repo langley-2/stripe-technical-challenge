@@ -53,13 +53,11 @@ def test_invalid_payment_intent():
 
 def test_payment_intent_status():
     mock_status = MagicMock()
+    mock_status.id = "pi_test"
     mock_status.status = "succeeded"
     mock_status.amount = 2300
     with patch("main.stripe.PaymentIntent.retrieve", return_value = mock_status):
         response = client.get("/api/check-payment-intent-status/pi_test")
     
     assert response.status_code == 200
-    assert response.json() == {
-    "status": "succeeded",
-    "amount": 2300
-}
+    assert response.json() == {"id": "pi_test", "status": "succeeded", "amount": 2300}

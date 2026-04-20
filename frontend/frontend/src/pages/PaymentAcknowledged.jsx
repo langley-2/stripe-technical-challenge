@@ -10,6 +10,7 @@ export default function PaymentAcknowledged() {
 
   const [status, setStatus] = useState(null);
   const [amount, setAmount] = useState(null);
+  const [intentId, setIntentId] = useState(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +27,7 @@ export default function PaymentAcknowledged() {
         .then((data) => {
           setStatus(data.status);
           setAmount(data.amount);
-
+          setIntentId(data.id);
           if (data.status === "succeeded" || attempts >= 3) {
             setLoading(false);
             clearInterval(poll);
@@ -67,6 +68,7 @@ export default function PaymentAcknowledged() {
                 You're all set
               </h1>
               <p className="text-lg text-gray-400">Your order is confirmed.</p>
+              <p className="text-sm text-gray-400">{intentId}</p>
               <p className="text-2xl font-semibold text-gray-900 mt-2">
                 ${(amount / 100).toFixed(2)}
               </p>

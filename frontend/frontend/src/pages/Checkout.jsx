@@ -8,48 +8,43 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import { useState, useEffect } from "react";
 
+const stripe_key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = loadStripe(stripe_key);
+function CheckoutForm() {
+  const stripe = useStripe();
+  const elements = useElements();
 
-const stripe_key = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
-const stripePromise = loadStripe(
-  stripe_key
-);
-  function CheckoutForm() {
-    const stripe = useStripe();
-    const elements = useElements();
-
-    async function handleSubmit(e) {
-      e.preventDefault();
-      await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/payment-acknowledged`,
-        },
-      });
-    }
-    return (
-      <form onSubmit={handleSubmit}>
-        <PaymentElement />
-        <div className="pt-4">
-          <button
-            className="bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium px-8 py-3 rounded-full transition-colors duration-200"
-            type="submit"
-          >
-            Pay now
-          </button>
-        </div>
-      </form>
-    );
+  async function handleSubmit(e) {
+    e.preventDefault();
+    await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/payment-acknowledged`,
+      },
+    });
   }
+  return (
+    <form onSubmit={handleSubmit}>
+      <PaymentElement />
+      <div className="pt-4">
+        <button
+          className="bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium px-8 py-3 rounded-full transition-colors duration-200"
+          type="submit"
+        >
+          Pay now
+        </button>
+      </div>
+    </form>
+  );
+}
 export default function Checkout() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams(); 
-  const bookId = searchParams.get("item_id")
+  const [searchParams] = useSearchParams();
+  const bookId = searchParams.get("item_id");
 
   const [book, setBook] = useState(null);
   const [clientSecret, setClientSecret] = useState(null);
   const [loading, setLoading] = useState(true);
-
-
 
   useEffect(() => {
     fetch(`/api/items/${bookId}`)
@@ -67,7 +62,7 @@ export default function Checkout() {
             setLoading(false);
           });
       });
-  }, []);
+  }, [bookId]);
 
   if (!bookId) {
     navigate("/");

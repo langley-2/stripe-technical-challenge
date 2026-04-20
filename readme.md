@@ -32,8 +32,8 @@ Component Model
 
 The front end is a simple ReactJS application that presents 3 page views;
 1. A home page that displays a list of books
-2. A checkout view that presents the book data (title and price) alongside a Stripe React checkout element
-3. A Payment confirmed page that presents the intent-id while loading, and a success message once a payment is confirmed. 
+2. A checkout view that presents the book data (title and price) alongside a Stripe Payment checkout element
+3. A Payment confirmed page that presents the intent-id while loading, and a success message with total amount and payment_intent_id once a payment is confirmed. 
 
 
 **/backend**
@@ -42,7 +42,7 @@ The backend is a FastAPI application that presents four simple endpoints;
 1. `GET /api/items` - returns a dict of items (books) for sale.
 2. `GET /api/items/{item_id}` - accepts a path param item id, and returns a single instance of the item - including ID, title, amount.
 3. `POST /api/create-payment-intent` - accepts an item_id as a JSON body, and returns a stripe payment intent ID and client secret. 
-4. `GET /api/check-payment-intent-status/{intent_id}` - accepts a payment intent id as a path param and returns the status of the payment, and the total amount. 
+4. `GET /api/check-payment-intent-status/{intent_id}` - accepts a payment intent id as a path param and returns the intent_id, status of the payment, and the total amount. 
 
 *For further information, see the API docs or included [Postman collection.](/backend/stripe_checkout.postman_collection.json)*
 
@@ -97,20 +97,28 @@ I started by integrating Stripe into the provided repository. This was challengi
 
 From there, I started creating a similar application using more familiar frameworks.
 
-The backend was recreated in FastAPI. I have done personal projects in the past using Stripe libraries end to end (create product, update product, get product, custom product search, creating checkout links, creating payment intents etc) so this was a little bit easier. I did choose to use automatic_payment_methods to show the most relevant payment methods, but in this case its just cards used for testing.  
+The backend was recreated in FastAPI. I have done personal projects in the past using Stripe libraries end to end (create product, update product, get product, custom product search, creating checkout links, creating payment intents etc) so this was a little bit easier. I did choose to use automatic_payment_methods to show the most relevant payment methods, but in this case it's just cards used for testing.  
 
 Once the back end was in a finalised state, I wrote test cases with validations for some base cases. 
 
 I then started on some simple front end pages. I used Claude Code to generate the tailwind CSS classes for styling. After the base pages were done, I started writing the Javascript to connect to the backend APIs. 
 
-Some deliberate design decisions were made along the way - for example, including the payment-intent_id on the loading page once a user checks out. In practice this should be hidden, but is included to show the payment flow. 
+Some deliberate design decisions were made along the way - for example, including the payment_intent_id on the confirmation pages once a user checks out. In practice this should be hidden, but is included to show the payment flow. 
 
-Docs: https://docs.stripe.com/js/react_stripe_js/elements/payment_element, https://docs.stripe.com/sdks/stripejs-react?locale=fr-FR
+**APIs used:**
+- The backend uses the PaymentIntents API (stripe.PaymentIntent.create / retrieve). 
+- The frontend uses the Stripe Payment Element via @stripe/react-stripe-js to render the payment form, which uses the Stripe confirmPayment() APIs. 
+
+**Docs used:** 
+- [Javascript Payment Element](https://docs.stripe.com/js/react_stripe_js/elements/payment_element)
+- [Stripe.js React](https://docs.stripe.com/sdks/stripejs-react?locale=fr-FR)
+- [Stripe API PaymentIntents: Retrieve (Python)](https://docs.stripe.com/api/payment_intents/retrieve?lang=python)
+- [Stripe API PaymentIntents: Create (Python)](https://docs.stripe.com/api/payment_intents/create?lang=python)
 
 
 ## Extensions and Enhancements
 - Test cases should be added for front end and back end [solved]
-- The API endpoints in the backend do not require a session or authentication  Ideally, we could map a users session_id to their payment_intent_id in a database and verify upon retrieval.
+- The API endpoints in the backend do not require a session or authentication.  Ideally, we could map a users session_id to their payment_intent_id in a database and verify upon retrieval.
 - The front end polls for a successful payment status. The poll occurs 3 times to prevent infinite polling. A better configuration would be to use Stripe webhooks to send events for successful payments. 
 - The item list is hardcoded in the backend. A better approach would be to store products in stripe, or in a database.
 - Proxy configuration could be updated for deployment - using CORS on the backend for deployment on localhost and publicly. 
