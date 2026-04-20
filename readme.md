@@ -122,7 +122,7 @@ Some deliberate design decisions were made along the way - for example, includin
 - The front end polls for a successful payment status. The poll occurs 3 times to prevent infinite polling. A better configuration would be to use Stripe webhooks to send events for successful payments. 
 - The item list is hardcoded in the backend. A better approach would be to store products in stripe, or in a database.
 - Proxy configuration could be updated for deployment - using CORS on the backend for deployment on localhost and publicly. 
-- PaymentIntent is created on the page load for the checkout. This is standard but might create some dangling intents in Stripe if a user doesnt checkout. We could add code to clean these up or perform analytics, or retries on failure. 
+- PaymentIntent is created on the page load for the checkout. This is standard but might create some dangling intents in Stripe if a user doesnt checkout. We could add code to clean these up or perform analytics, or retries on failure. Idempotency keys should be used here. 
 - The Python backend does have models for Item which is unused. I added some models for basic extensibility.
 - The structure of the codebase could be improved - for example, breaking API endpoints into separate files, adding authentication handling, database interfaces and classes - I traded extensible structure for simplicity with some minor exceptions like adding some Models. 
 - Checkout items at the moment are passed by state. This could be improved by moving them to query parameters - that way any person checking out could send that link to another person to checkout without causing a failure. [Solved]
