@@ -10,7 +10,7 @@ This directory contains the provided Flask application. This application was ext
 
 ### `/frontend` and `/backend` 
 
-As an addition the example application was re-written here using more familiar frameworks. 
+As an addition the example application was re-written here using more familiar frameworks. This implementation also uses the Stripe Payment Element with a PaymentIntent flow. 
 
 **These directories are the focus of the readme moving forward.**
 
@@ -35,13 +35,14 @@ The front end is a simple ReactJS application that presents 3 page views;
 2. A checkout view that presents the book data (title and price) alongside a Stripe React checkout element
 3. A Payment confirmed page that presents the intent-id while loading, and a success message once a payment is confirmed. 
 
+
 **/backend**
 
 The backend is a FastAPI application that presents four simple endpoints; 
 1. `GET /api/items` - returns a dict of items (books) for sale.
 2. `GET /api/items/{item_id}` - accepts a path param item id, and returns a single instance of the item - including ID, title, amount.
 3. `POST /api/create-payment-intent` - accepts an item_id as a JSON body, and returns a stripe payment intent ID and client secret. 
-4. `GET /api/check-payment-intent-status/{intent_id}` - accepts a payment intent id as a path param and returns the status of the payment. 
+4. `GET /api/check-payment-intent-status/{intent_id}` - accepts a payment intent id as a path param and returns the status of the payment, and the total amount. 
 
 *For further information, see the API docs or included [Postman collection.](/backend/stripe_checkout.postman_collection.json)*
 
@@ -82,7 +83,7 @@ This sample app is configured to use a proxy to avoid CORS issues; this can be c
 
 
 **Testing**
-some small test cases have been added to validate the backend API endpoints. 
+Some small test cases have been added to validate the backend API endpoints. 
 To run the tests:
 1. from the project root, `cd backend`
 2. run `python3 -m pytest` in the terminal using the project venv in `.venv`
@@ -98,21 +99,25 @@ From there, I started creating a similar application using more familiar framewo
 
 The backend was recreated in FastAPI. I have done personal projects in the past using Stripe libraries end to end (create product, update product, get product, custom product search, creating checkout links, creating payment intents etc) so this was a little bit easier. I did choose to use automatic_payment_methods to show the most relevant payment methods, but in this case its just cards used for testing.  
 
-Once I had made the backend I started on some simple front end pages. I used Claude Code to generate the tailwind CSS classes for styling. 
+Once the back end was in a finalised state, I wrote test cases with validations for some base cases. 
+
+I then started on some simple front end pages. I used Claude Code to generate the tailwind CSS classes for styling. After the base pages were done, I started writing the Javascript to connect to the backend APIs. 
+
+Some deliberate design decisions were made along the way - for example, including the payment-intent_id on the loading page once a user checks out. In practice this should be hidden, but is included to show the payment flow. 
 
 Docs: https://docs.stripe.com/js/react_stripe_js/elements/payment_element, https://docs.stripe.com/sdks/stripejs-react?locale=fr-FR
 
 
 ## Extensions and Enhancements
 - Test cases should be added for front end and back end [solved]
-- The API endpoints in the backend are unauthenticated, and not tied to a session. Ideally, we could map a users session_id to their payment_intent_id in a database and check that in the backend such that payment_intent statuses remain session bound.
-- The front end and back end poll for a successful payment. The poll occurs 3 times to prevent infinite polling. A better configuration would be to use Stripe webhooks to send events for successful payments 
-- The items are hardcoded in the backend. A better approach would be to store products in stripe, or in a database.
+- The API endpoints in the backend do not require a session or authentication  Ideally, we could map a users session_id to their payment_intent_id in a database and verify upon retrieval.
+- The front end polls for a successful payment status. The poll occurs 3 times to prevent infinite polling. A better configuration would be to use Stripe webhooks to send events for successful payments. 
+- The item list is hardcoded in the backend. A better approach would be to store products in stripe, or in a database.
 - Proxy configuration could be updated for deployment - using CORS on the backend for deployment on localhost and publicly. 
-- PaymentIntent is created on the page load for the checkout. This is standard it might create some dangling intents in Stripe if a user doesnt check out. We could add code to clean these up or perform analytics if a user doesnt purchase or the purchase fails. There is also no retry flow currently for failed payments. 
-- The Python backend does have models for Item, which is unused. I added SOME models for basic extensibility.
-- The structure of the codebase could be improved - for example, breaking API endpoints into separate files, adding authentication handling structures, database interfaces and classes - I traded extensible structure for simplicity with some minor exceptions like adding some Models. 
+- PaymentIntent is created on the page load for the checkout. This is standard but might create some dangling intents in Stripe if a user doesnt checkout. We could add code to clean these up or perform analytics, or retries on failure. 
+- The Python backend does have models for Item which is unused. I added some models for basic extensibility.
+- The structure of the codebase could be improved - for example, breaking API endpoints into separate files, adding authentication handling, database interfaces and classes - I traded extensible structure for simplicity with some minor exceptions like adding some Models. 
 - Checkout items at the moment are passed by state. This could be improved by moving them to query parameters - that way any person checking out could send that link to another person to checkout without causing a failure. [Solved]
-- The backend could be updated to return stripe errors, and update the front end to have them rendered. 
+- The backend could be updated to return stripe errors, and update the front end to have them rendered. Most of this is handled by Stripe elements.  
 - We could also add some simple extensions - like for example, a quantity selector, or an in memory store for previously purchased items. 
-- Failed API calls will also leave the UI dangling. 
+- Failed API calls may also leave the UI in an incomplete state. These could be shown to the user in a demo app for debugging.  

@@ -53,7 +53,7 @@ async def create_payment_intent(request: PaymentIntentRequest):
 async def check_payment_intent_status(payment_intent_id: str):  
     try:
         payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-        return { "status": payment_intent.status }
+        return { "status": payment_intent.status, "amount": payment_intent.amount }
     except stripe.StripeError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

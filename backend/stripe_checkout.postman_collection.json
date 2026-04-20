@@ -79,7 +79,7 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "localhost:8000/api/check-payment-intent-status/REPLACE_WITH_PAYMENT_ID",
+          "raw": "localhost:8000/api/check-payment-intent-status/PAYMENT_INTENT_ID",
           "host": [
             "localhost"
           ],
@@ -87,7 +87,7 @@
           "path": [
             "api",
             "check-payment-intent-status",
-            "REPLACE_WITH_PAYMENT_ID"
+            "PAYMENT_INTENT_ID"
           ]
         }
       },

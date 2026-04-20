@@ -4,11 +4,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 export default function PaymentAcknowledged() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  
+
   const paymentIntentId = searchParams.get("payment_intent");
   const redirectStatus = searchParams.get("redirect_status");
 
   const [status, setStatus] = useState(null);
+  const [amount, setAmount] = useState(null);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,6 +25,8 @@ export default function PaymentAcknowledged() {
         .then((r) => r.json())
         .then((data) => {
           setStatus(data.status);
+          setAmount(data.amount);
+
           if (data.status === "succeeded" || attempts >= 3) {
             setLoading(false);
             clearInterval(poll);
@@ -63,6 +67,9 @@ export default function PaymentAcknowledged() {
                 You're all set
               </h1>
               <p className="text-lg text-gray-400">Your order is confirmed.</p>
+              <p className="text-2xl font-semibold text-gray-900 mt-2">
+                ${(amount / 100).toFixed(2)}
+              </p>
             </>
           ) : (
             <>
