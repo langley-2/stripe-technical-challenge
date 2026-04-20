@@ -44,8 +44,7 @@ def test_create_payment_intent():
     assert "client_secret" in data
 
 def test_invalid_payment_intent():
-    with patch("main.stripe.PaymentIntent.create"):
-        response = client.post("/api/create-payment-intent", json={"item_id": "abc"})
+    response = client.post("/api/create-payment-intent", json={"item_id": "abc"})
     assert response.status_code == 404
     assert response.json() == {
     "detail": "Not Found"
@@ -62,15 +61,3 @@ def test_payment_intent_status():
     assert response.json() == {
     "status": "succeeded"
 }
-
-# # ideally these calls should be authenticated for each user 
-# # or perhaps session - i.e. create a payment intent and store 
-# # it in DB alongside session ID. Use this to look up whether an 
-# # intent belongs to a session in the below call
-# @app.get("/api/check-payment-intent-status/{payment_intent_id}")
-# async def check_payment_intent_status(payment_intent_id: str):  
-#     try:
-#         payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
-#         return { "status": payment_intent.status }
-#     except stripe.StripeError as e:
-#         raise HTTPException(status_code=400, detail=str(e))

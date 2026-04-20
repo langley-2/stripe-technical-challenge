@@ -81,7 +81,7 @@ This sample app is configured to use a proxy to avoid CORS issues; this can be c
 
 
 
-**testing**
+**Testing**
 some small test cases have been added to validate the backend API endpoints. 
 To run the tests:
 1. from the project root, `cd backend`
@@ -92,15 +92,15 @@ To run the tests:
 
 My approach was iterative. 
 
-I started by integrating Stripe into the provided repository. This was challenging as i hadnt worked with Flask and Jinja in a while. 
+I started by integrating Stripe into the provided repository. This was challenging as I hadn't worked with Flask and Jinja in a while. 
 
-From there, i started creating a similar application using more familiar frameworks.
+From there, I started creating a similar application using more familiar frameworks.
 
-The backend was reacreated in FastAPI. I have done personal projects in the past using Stripe libraries end to end (create product, update product, get product, custom product search, creating checkout links, creating payment intents etc) so this was a little bit easier. I did choose to use automatic_payment_methods to show the most relevant payment methods, but in this case its just cards used for testing.  
+The backend was recreated in FastAPI. I have done personal projects in the past using Stripe libraries end to end (create product, update product, get product, custom product search, creating checkout links, creating payment intents etc) so this was a little bit easier. I did choose to use automatic_payment_methods to show the most relevant payment methods, but in this case its just cards used for testing.  
 
-Once i had made the backend i started on some simple front end pages. I used Claude Code to generate the tailwind CSS classes for styling. 
+Once I had made the backend I started on some simple front end pages. I used Claude Code to generate the tailwind CSS classes for styling. 
 
-
+Docs: https://docs.stripe.com/js/react_stripe_js/elements/payment_element, https://docs.stripe.com/sdks/stripejs-react?locale=fr-FR
 
 
 ## Extensions and Enhancements
@@ -111,7 +111,7 @@ Once i had made the backend i started on some simple front end pages. I used Cla
 - Proxy configuration could be updated for deployment - using CORS on the backend for deployment on localhost and publicly. 
 - PaymentIntent is created on the page load for the checkout. This is standard it might create some dangling intents in Stripe if a user doesnt check out. We could add code to clean these up or perform analytics if a user doesnt purchase or the purchase fails. There is also no retry flow currently for failed payments. 
 - The Python backend does have models for Item, which is unused. I added SOME models for basic extensibility.
-- The structure of the codebase could be improved - for example, breaking API endpoints into separate files, adding authentication handling structures, database interfaces and classes - i traded extensible structure for simplicity with some minor exceptions like adding some Models. 
+- The structure of the codebase could be improved - for example, breaking API endpoints into separate files, adding authentication handling structures, database interfaces and classes - I traded extensible structure for simplicity with some minor exceptions like adding some Models. 
 - Checkout items at the moment are passed by state. This could be improved by moving them to query parameters - that way any person checking out could send that link to another person to checkout without causing a failure. [Solved]
 - The backend could be updated to return stripe errors, and update the front end to have them rendered. 
 - We could also add some simple extensions - like for example, a quantity selector, or an in memory store for previously purchased items. 

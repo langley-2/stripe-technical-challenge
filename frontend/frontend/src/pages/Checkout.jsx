@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Elements,
   PaymentElement,
@@ -42,8 +42,7 @@ const stripePromise = loadStripe(
   }
 export default function Checkout() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams(); 
+  const [searchParams] = useSearchParams(); 
   const bookId = searchParams.get("item_id")
 
   const [book, setBook] = useState(null);
